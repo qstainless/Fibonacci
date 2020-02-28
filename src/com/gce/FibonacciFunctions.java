@@ -1,19 +1,32 @@
 package com.gce;
 
 public class FibonacciFunctions {
+
+    /**
+     * Calculates the Fibonacci sequence iteratively
+     *
+     * @param n The number of passes
+     * @return int
+     */
     int iterative(int n) {
         int previousNumber = 0;
         int nextNumber = 1;
 
         for (int i = 1; i <= n; i++) {
-            // System.out.print(previousNumber + " ");
             int sum = previousNumber + nextNumber;
             previousNumber = nextNumber;
             nextNumber = sum;
         }
+
         return 0;
     }
 
+    /**
+     * Calculates the Fibonacci sequence recursively
+     *
+     * @param n The number of passes
+     * @return int
+     */
     int recursive(int n) {
         if (n <= 1) {
             return n;

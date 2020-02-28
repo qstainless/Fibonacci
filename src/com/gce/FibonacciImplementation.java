@@ -17,41 +17,118 @@
 
 package com.gce;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+
 public class FibonacciImplementation {
 
-    static int iterations;
+    // Set the number of iterations or passes
+    static int iterations = 35;
+    static int runtimes = 20;
 
+    // Variables for calculating the execution times of Fibonacci methods
     static long startTime;
     static long endTime;
+
+    // Instantiates the FibonacciFunctions
     static FibonacciFunctions fibonacci = new FibonacciFunctions();
 
-    public static void main(String[] args1) {
-        for (int i = 0; i <= 35; i++) {
-            executeRecursive(i);
-            executeIterative(i);
+    // Instantiates the arrays where the executin times will be stored
+    static long[] recursive = new long[iterations];
+    static long[] iterative = new long[iterations];
+
+    /**
+     * Main method. Will call the recursive and iterative methods
+     * for as many passes as the value set for iterations
+     * After making the calculations will export the results to
+     * a CSV file
+     *
+     * @param args
+     */
+    public static void main(String[] args) throws IOException {
+        for (int n = 1; n <= runtimes; n++) {
+            for (int i = 0; i < iterations - 1; i++) {
+                iterative[i] = executeIterative(i);
+                recursive[i] = executeRecursive(i);
+            }
+
+            System.out.println("Recursive results");
+            System.out.println(Arrays.toString(recursive));
+
+            System.out.println("Iterative results");
+            System.out.println(Arrays.toString(iterative));
+
+            exportResults(recursive, iterative, n);
         }
     }
 
-    private static void executeIterative(int n) {
-        // System.out.print("Iterative version to " + n + ": ");
+    /**
+     * Calls the iterative method to calculate de Fibonacci sequence
+     *
+     * @param n
+     */
+    private static long executeIterative(int n) {
         startTime = System.nanoTime();
         fibonacci.iterative(n);
         endTime = System.nanoTime();
-        displayExecutionTime("Iteration", startTime, endTime);
+
+        return endTime - startTime;
     }
 
-    private static void executeRecursive(int n) {
-        // System.out.print("Recursive version to " + n + ": ");
+    /**
+     * Calls the recursive method to calculate the Fibonacci sequence
+     *
+     * @param n
+     */
+    private static long executeRecursive(int n) {
         startTime = System.nanoTime();
         for (int i = 0; i < n; i++) {
             fibonacci.recursive(i);
-            // System.out.print(fibonacci.recursive(i) + " ");
         }
         endTime = System.nanoTime();
-        displayExecutionTime("Recursion", startTime, endTime);
+
+        return endTime - startTime;
     }
 
-    private static void displayExecutionTime(String methodType, long startTime, long endTime) {
-        System.out.println(methodType + " with " + iterations + " iterations => execution time: " + (endTime - startTime) + " nanosecs.");
+    /**
+     * Outputs the results of time calculations to a CSV file for graphing
+     *
+     * @param recursive
+     * @param iterative
+     * @param n
+     * @throws IOException
+     */
+    private static void exportResults(long[] recursive, long[] iterative, int n) throws IOException {
+        String recursivefilename = "Fibonacci Results-Recursive-" + n + ".csv";
+        String iterativefilename = "Fibonacci Results-Iterative-" + n + ".csv";
+
+        BufferedWriter recursiveResults = new BufferedWriter(new FileWriter(recursivefilename));
+        BufferedWriter iterativeResults = new BufferedWriter(new FileWriter(iterativefilename));
+
+        StringBuilder sbR = new StringBuilder();
+        StringBuilder sbI = new StringBuilder();
+
+        for (long element : recursive) {
+            sbR.append(element);
+            sbR.append(",");
+        }
+
+        for (long element : iterative) {
+            sbI.append(element);
+            sbI.append(",");
+        }
+
+        recursiveResults.write(sbR.toString());
+        recursiveResults.close();
+
+        System.out.println();
+        System.out.println(recursivefilename + " was saved.");
+
+        iterativeResults.write(sbI.toString());
+        iterativeResults.close();
+
+        System.out.println(iterativefilename + " was saved.");
     }
 }
